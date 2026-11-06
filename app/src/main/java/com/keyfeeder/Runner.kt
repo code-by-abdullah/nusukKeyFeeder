@@ -6,4 +6,7 @@ object Runner {
     @Volatile var index = 0
     @Volatile var delayMs = 2500L
     @Volatile var failed = mutableListOf<String>()
+    @Volatile var lastMsg = "service abhi connect nahi hui"
+    @Volatile var debugRequested = false
+    @Volatile var debugText = ""
 }
