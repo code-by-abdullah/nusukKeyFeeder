@@ -1,4 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Key Feeder</string>
-    <string name="service_desc">Enters key codes one by one into the Keys screen of the Nusuk challenge and taps "Check the code".</string>
+    <string name="service_desc">Key Feeder types your Nusuk keys into the Nusuk app and taps the Check button for you.</string>
 </resources>

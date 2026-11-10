@@ -37,15 +37,19 @@ class MainActivity : Activity() {
     private val night get() =
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    // Dark: black + gold.  Light: warm white + gold.
-    private val cBg get() = if (night) 0xFF0A0A0A.toInt() else 0xFFFBF7EC.toInt()
-    private val cCard get() = if (night) 0xFF151413.toInt() else 0xFFFFFFFF.toInt()
-    private val cField get() = if (night) 0xFF0E0D0B.toInt() else 0xFFFFFCF3.toInt()
-    private val cText get() = if (night) 0xFFF5ECD7.toInt() else 0xFF211A0A.toInt()
-    private val cMuted get() = if (night) 0xFFA89F8A.toInt() else 0xFF7A6E52.toInt()
-    private val cBorder get() = if (night) 0xFF332E22.toInt() else 0xFFE8DFC4.toInt()
-    private val cAccent get() = if (night) 0xFFE0B83C.toInt() else 0xFF9C7608.toInt()
-    private val cOnAccent get() = if (night) 0xFF1A1400.toInt() else 0xFFFFFFFF.toInt()
+    // Luxury palette. Dark: deep black + champagne gold. Light: ivory + antique gold.
+    private val cBg get() = if (night) 0xFF050505.toInt() else 0xFFF8F3E6.toInt()
+    private val cCard get() = if (night) 0xFF0F0E0C.toInt() else 0xFFFFFEFA.toInt()
+    private val cCardTop get() = if (night) 0xFF1A1812.toInt() else 0xFFFFFFFF.toInt()
+    private val cField get() = if (night) 0xFF080807.toInt() else 0xFFFBF6E8.toInt()
+    private val cText get() = if (night) 0xFFF4EBD3.toInt() else 0xFF241C0A.toInt()
+    private val cMuted get() = if (night) 0xFFA39A82.toInt() else 0xFF7D7156.toInt()
+    private val cBorder get() = if (night) 0xFF2A261B.toInt() else 0xFFE6DCBF.toInt()
+    private val cLine get() = if (night) 0x55D4AF37 else 0x66B8902A          // gold hairline
+    private val cGold1 get() = if (night) 0xFFF3D982.toInt() else 0xFFE2BE5A.toInt() // light end of gold
+    private val cGold2 get() = if (night) 0xFFC79B22.toInt() else 0xFFB08718.toInt() // dark end of gold
+    private val cAccent get() = if (night) 0xFFE6C15A.toInt() else 0xFF94700A.toInt()
+    private val cOnAccent get() = 0xFF1A1400.toInt()
     private val cDanger get() = if (night) 0xFFF28B82.toInt() else 0xFFC5221F.toInt()
     private val cSuccess get() = if (night) 0xFF81C995.toInt() else 0xFF188038.toInt()
 
@@ -90,16 +94,20 @@ class MainActivity : Activity() {
 
         // ----- header -----
         root.addView(TextView(this).apply {
-            text = "Key Feeder"
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f)
-            setTextColor(cText)
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            text = "KEY FEEDER"
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f)
+            letterSpacing = 0.16f
+            setTextColor(cAccent)
+            typeface = Typeface.create("serif", Typeface.BOLD)
         })
+        root.addView(View(this).apply {
+            background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(cGold1, cGold2, Color.TRANSPARENT))
+        }, LinearLayout.LayoutParams(dp(120), dp(2)).apply { topMargin = dp(10) })
         root.addView(TextView(this).apply {
             text = "Enter your Nusuk keys automatically, one after another."
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setTextColor(cMuted)
-            setPadding(0, dp(4), 0, dp(20))
+            setPadding(0, dp(10), 0, dp(22))
         })
 
         // ----- card 1: accessibility -----
@@ -205,7 +213,7 @@ class MainActivity : Activity() {
 
         // ----- card 3: status -----
         runChip = chip()
-        progressView = ProgressBarView(this, cBorder, cAccent)
+        progressView = ProgressBarView(this, cBorder, cGold1, cGold2)
         progressText = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setTextColor(cText)
@@ -333,7 +341,10 @@ class MainActivity : Activity() {
 
     private fun card() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        background = rounded(cCard, 18, cBorder)
+        background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(cCardTop, cCard)).apply {
+            cornerRadius = dp(20).toFloat()
+            setStroke(dp(1), cLine)
+        }
         setPadding(dp(16), dp(16), dp(16), dp(16))
         layoutParams = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) }
     }
@@ -341,16 +352,16 @@ class MainActivity : Activity() {
     private fun sectionLabel(t: String) = TextView(this).apply {
         text = t.uppercase()
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-        letterSpacing = 0.08f
-        setTextColor(cMuted)
+        letterSpacing = 0.16f
+        setTextColor(cAccent)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
 
     private fun title(t: String) = TextView(this).apply {
         text = t
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
         setTextColor(cText)
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        typeface = Typeface.create("serif", Typeface.BOLD)
         setPadding(0, dp(8), 0, 0)
     }
 
@@ -419,15 +430,18 @@ class MainActivity : Activity() {
         val fg: Int
         val stroke: Int?
         when (kind) {
-            Kind.PRIMARY -> { fill = cAccent; fg = cOnAccent; stroke = null }
-            Kind.TONAL -> { fill = withAlpha(cAccent, 0x1F); fg = cAccent; stroke = null }
+            Kind.PRIMARY -> { fill = cGold2; fg = cOnAccent; stroke = null }
+            Kind.TONAL -> { fill = withAlpha(cAccent, 0x1A); fg = cAccent; stroke = withAlpha(cAccent, 0x66) }
             Kind.DANGER -> { fill = Color.TRANSPARENT; fg = cDanger; stroke = withAlpha(cDanger, 0x99) }
             Kind.TEXT -> { fill = Color.TRANSPARENT; fg = cMuted; stroke = null }
         }
         setTextColor(fg)
         background = RippleDrawable(
             ColorStateList.valueOf(withAlpha(fg, 0x33)),
-            rounded(fill, 14, stroke),
+            if (kind == Kind.PRIMARY)
+                GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(cGold1, cGold2))
+                    .apply { cornerRadius = dp(14).toFloat() }
+            else rounded(fill, 14, stroke),
             null
         )
     }
@@ -450,15 +464,21 @@ class MainActivity : Activity() {
     private class ProgressBarView(
         ctx: android.content.Context,
         private val track: Int,
-        private val fill: Int
+        private val fill1: Int,
+        private val fill2: Int
     ) : View(ctx) {
         private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private val rect = RectF()
+        private var shader: android.graphics.Shader? = null
         var fraction = 0f
             set(v) {
                 val c = v.coerceIn(0f, 1f)
                 if (c != field) { field = c; invalidate() }
             }
+
+        override fun onSizeChanged(w: Int, h: Int, ow: Int, oh: Int) {
+            shader = android.graphics.LinearGradient(0f, 0f, w.toFloat(), 0f, fill1, fill2, android.graphics.Shader.TileMode.CLAMP)
+        }
 
         override fun onDraw(canvas: Canvas) {
             val r = height / 2f
@@ -467,8 +487,9 @@ class MainActivity : Activity() {
             canvas.drawRoundRect(rect, r, r, paint)
             if (fraction > 0f) {
                 rect.set(0f, 0f, maxOf(width * fraction, height.toFloat()), height.toFloat())
-                paint.color = fill
+                paint.shader = shader
                 canvas.drawRoundRect(rect, r, r, paint)
+                paint.shader = null
             }
         }
     }
