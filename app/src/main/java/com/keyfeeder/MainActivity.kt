@@ -37,13 +37,15 @@ class MainActivity : Activity() {
     private val night get() =
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    private val cBg get() = if (night) 0xFF0F1115.toInt() else 0xFFF3F5F7.toInt()
-    private val cCard get() = if (night) 0xFF1A1D24.toInt() else 0xFFFFFFFF.toInt()
-    private val cText get() = if (night) 0xFFE8EAED.toInt() else 0xFF13181F.toInt()
-    private val cMuted get() = if (night) 0xFF9AA3AE.toInt() else 0xFF5E6B7A.toInt()
-    private val cBorder get() = if (night) 0xFF2C323C.toInt() else 0xFFDDE3E9.toInt()
-    private val cAccent get() = if (night) 0xFF2DD4BF.toInt() else 0xFF0B7F70.toInt()
-    private val cOnAccent get() = if (night) 0xFF04201C.toInt() else 0xFFFFFFFF.toInt()
+    // Dark: black + gold.  Light: warm white + gold.
+    private val cBg get() = if (night) 0xFF0A0A0A.toInt() else 0xFFFBF7EC.toInt()
+    private val cCard get() = if (night) 0xFF151413.toInt() else 0xFFFFFFFF.toInt()
+    private val cField get() = if (night) 0xFF0E0D0B.toInt() else 0xFFFFFCF3.toInt()
+    private val cText get() = if (night) 0xFFF5ECD7.toInt() else 0xFF211A0A.toInt()
+    private val cMuted get() = if (night) 0xFFA89F8A.toInt() else 0xFF7A6E52.toInt()
+    private val cBorder get() = if (night) 0xFF332E22.toInt() else 0xFFE8DFC4.toInt()
+    private val cAccent get() = if (night) 0xFFE0B83C.toInt() else 0xFF9C7608.toInt()
+    private val cOnAccent get() = if (night) 0xFF1A1400.toInt() else 0xFFFFFFFF.toInt()
     private val cDanger get() = if (night) 0xFFF28B82.toInt() else 0xFFC5221F.toInt()
     private val cSuccess get() = if (night) 0xFF81C995.toInt() else 0xFF188038.toInt()
 
@@ -237,7 +239,7 @@ class MainActivity : Activity() {
             typeface = Typeface.MONOSPACE
             setTextColor(cText)
             setTextIsSelectable(true)
-            background = rounded(if (night) 0xFF12151A.toInt() else 0xFFF3F5F7.toInt(), 10, cBorder)
+            background = rounded(cField, 10, cBorder)
             setPadding(dp(10), dp(10), dp(10), dp(10))
             visibility = View.GONE
         }
@@ -381,9 +383,9 @@ class MainActivity : Activity() {
     }
 
     private fun fieldStyle(et: EditText) {
-        val idle = rounded(if (night) 0xFF12151A.toInt() else 0xFFF8F9FA.toInt(), 12, cBorder)
+        val idle = rounded(cField, 12, cBorder)
         val focused = GradientDrawable().apply {
-            setColor(if (night) 0xFF12151A.toInt() else 0xFFFFFFFF.toInt())
+            setColor(cField)
             cornerRadius = dp(12).toFloat()
             setStroke(dp(2), cAccent)
         }

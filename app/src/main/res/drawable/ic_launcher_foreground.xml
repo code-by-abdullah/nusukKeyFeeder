@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="53"
+        android:pivotY="54"
+        android:rotation="-45">
+        <!-- key head with hole -->
+        <path
+            android:fillColor="#E0B83C"
+            android:fillType="evenOdd"
+            android:pathData="M40,42 a12,12 0 1,0 0.001,0 z M40,49 a5,5 0 1,0 0.001,0 z" />
+        <!-- shaft -->
+        <path
+            android:fillColor="#E0B83C"
+            android:pathData="M50,51 L78,51 L78,57 L50,57 z" />
+        <!-- teeth -->
+        <path
+            android:fillColor="#E0B83C"
+            android:pathData="M65,57 L70,57 L70,65 L65,65 z M72,57 L77,57 L77,62 L72,62 z" />
+    </group>
+</vector>
