@@ -5,6 +5,7 @@ import android.accessibilityservice.GestureDescription
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Path
 import android.graphics.Rect
 import android.os.Bundle
@@ -25,12 +26,20 @@ class KeyService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         alive = true
-        Runner.lastMsg = "service connected"
+        Runner.serviceConnected = true
+        Runner.lastMsg = "Service connected."
         Thread { loop() }.also { it.isDaemon = true; it.start() }
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        alive = false
+        Runner.serviceConnected = false
+        return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         alive = false
+        Runner.serviceConnected = false
         super.onDestroy()
     }
 
@@ -101,22 +110,22 @@ class KeyService : AccessibilityService() {
         val args = Bundle().apply {
             putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, key)
         }
-        if (field.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)) return "set_text"
+        if (field.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)) return "set text"
 
-        // fallback: tap field + clipboard paste
+        // fallback: tap the field, then paste from the clipboard
         val r = Rect()
         field.getBoundsInScreen(r)
         tap(r.centerX().toFloat(), r.centerY().toFloat())
         sleep(600)
         val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        cm.setPrimaryClip(ClipData.newPlainText("k", key))
-        return if (field.performAction(AccessibilityNodeInfo.ACTION_PASTE)) "paste" else "FAIL"
+        cm.setPrimaryClip(ClipData.newPlainText("key", key))
+        return if (field.performAction(AccessibilityNodeInfo.ACTION_PASTE)) "paste" else "failed"
     }
 
     private fun dump(): String {
         val sb = StringBuilder()
         val rs = roots()
-        sb.append("roots=${rs.size}\n")
+        sb.append("Windows found: ${rs.size}\n")
         var lines = 0
         fun walk(n: AccessibilityNodeInfo?, d: Int) {
             if (n == null || lines > 70 || d > 30) return
@@ -141,21 +150,21 @@ class KeyService : AccessibilityService() {
                 sleep(5000)
                 Runner.debugText = dump()
                 Runner.debugRequested = false
-                toast("Debug ready, Key Feeder kholo")
+                toast("Diagnosis ready. Open Key Feeder.")
                 continue
             }
             if (!Runner.running) { sleep(500); continue }
 
             if (Runner.index >= Runner.keys.size) {
                 Runner.running = false
-                Runner.lastMsg = "done: ${Runner.keys.size} keys submit hui"
-                toast("Done: ${Runner.keys.size} keys")
+                Runner.lastMsg = "Finished. ${Runner.keys.size} codes submitted."
+                toast("Done: ${Runner.keys.size} codes submitted")
                 continue
             }
 
             val rs = roots()
             if (rs.isEmpty()) {
-                Runner.lastMsg = "screen ka tree nahi mila (root null)"
+                Runner.lastMsg = "Cannot read the screen. Open the Nusuk Keys screen."
                 sleep(1000); continue
             }
 
@@ -165,14 +174,14 @@ class KeyService : AccessibilityService() {
                 val another = findByLabel(rs, "Add another code")
                 if (another != null) {
                     click(another)
-                    Runner.lastMsg = "result screen: 'Add another code' dabaya"
+                    Runner.lastMsg = "Result screen: tapped \"Add another code\"."
                     noFieldCount = 0
                 } else if (noFieldCount >= 3) {
                     performGlobalAction(GLOBAL_ACTION_BACK)
-                    Runner.lastMsg = "input field nahi mila, Back dabaya (Keys screen kholo)"
+                    Runner.lastMsg = "Input field not found. Pressed Back; open the Nusuk Keys screen."
                     noFieldCount = 0
                 } else {
-                    Runner.lastMsg = "input field nahi mila"
+                    Runner.lastMsg = "Input field not found. Open the Nusuk Keys screen."
                 }
                 sleep(1000); continue
             }
@@ -183,7 +192,7 @@ class KeyService : AccessibilityService() {
             sleep(900)
 
             var clicked = false
-            var btnState = "button nahi mila"
+            var btnState = "not found"
             for (i in 0 until 5) {
                 val b = findByLabel(roots(), "Check the code")
                 if (b != null) {
@@ -193,7 +202,8 @@ class KeyService : AccessibilityService() {
                 sleep(600)
             }
 
-            Runner.lastMsg = "key ${Runner.index + 1}: type=$how, button=$btnState, click=${if (clicked) "ok" else "FAIL"}"
+            Runner.lastMsg = "Code ${Runner.index + 1}: typed via $how, button $btnState, " +
+                if (clicked) "tapped." else "tap failed."
             if (!clicked) Runner.failed.add(key)
             Runner.index++
             sleep(Runner.delayMs)

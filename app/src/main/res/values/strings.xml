@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Key Feeder</string>
-    <string name="service_desc">Keys ko Keys screen ke input field me ek ek karke daal kar Check the code dabata hai.</string>
+    <string name="service_desc">Enters key codes one by one into the Keys screen of the Nusuk challenge and taps "Check the code".</string>
 </resources>
