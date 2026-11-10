@@ -6,9 +6,7 @@ object Runner {
     @Volatile var index = 0
     @Volatile var delayMs = 2500L
     @Volatile var failed = mutableListOf<String>()
-    @Volatile var lastMsg = "Waiting to start."
+    @Volatile var lastMsg = "Accessibility service not connected yet"
     @Volatile var debugRequested = false
     @Volatile var debugText = ""
-    @Volatile var serviceConnected = false
-    @Volatile var draft = ""
 }
